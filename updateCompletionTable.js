@@ -66,9 +66,15 @@ function nestedFiles(dir) {
     return files;
 }
 
-const directories = getDirectories(PREPEND_PATH).filter(
-    (dir) => !IGNORE_DIRS.includes(dir),
-);
+const PRIORITY_DIRS = ['python', 'cpp', 'rust', 'go'];
+const priorityIndex = (dir) =>
+    PRIORITY_DIRS.includes(dir)
+        ? PRIORITY_DIRS.indexOf(dir)
+        : PRIORITY_DIRS.length;
+
+const directories = getDirectories(PREPEND_PATH)
+    .filter((dir) => !IGNORE_DIRS.includes(dir))
+    .sort((a, b) => priorityIndex(a) - priorityIndex(b));
 const nestedFilesInDir = directories.reduce((acc, dir) => {
     acc[dir] = nestedFiles(dir);
     return acc;
